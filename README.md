@@ -26,10 +26,13 @@ allows for easy positining and handling (adding/ removal, changing, etc) of over
 elements. Drawable elements are looped through each element of the draw() method of 
 the SceneScreen class based on earliest layer to latest. 
 
-Other Features:
+Other Features
+-----------------------
 Menu Class (clickable menus, add menu items, specific Menu Item rendering ) 
 Fade out/ in transition
-Animated text (*typewriter effect*) 
+Animated text (*typewriter effect*)
+   - Has it's own class for performing triggers when a specific line of text
+     is reach. 
 
 Features to come
 -----------------------

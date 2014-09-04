@@ -28,19 +28,19 @@ the SceneScreen class based on earliest layer to latest.
 
 Other Features
 -----------------------
-Menu Class (clickable menus, add menu items, specific Menu Item rendering ) 
-Fade out/ in transition
-Animated text (*typewriter effect*)
+-Menu Class (clickable menus, add menu items, specific Menu Item rendering ) 
+-Fade out/ in transition
+-Animated text (*typewriter effect*)
    - Has it's own class for performing triggers when a specific line of text
      is reach. 
 
 Features to come
 -----------------------
-Menu based decisions (along with Map to store choices made by user)
-Class for Custom Triggers (note to me, just search both the custom class and the regular
+-Menu based decisions (along with Map to store choices made by user)
+-Class for Custom Triggers (note to me, just search both the custom class and the regular
   class (re: reflection)) 
-Class for triggers to be performed on completion of another trigger 
-An example game
-Maybe a javadoc 
+-Class for triggers to be performed on completion of another trigger 
+-An example game
+-Maybe a javadoc 
 
 

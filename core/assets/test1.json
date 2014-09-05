@@ -31,12 +31,40 @@
 	],
 
 	"timeTriggers" : [
-		["0", "addBackground", "1 bg0 pic3.jpg"],
-		["0", "addAnimatedText", "3 at0 1 libz4 60 320 300 3 0.001f 0"],
-		["4", "addTextbox", "2 tb1 ai_box.png 50 25 700 210"],
-		["4", "addAnimatedText", "3 at1 0 libz4 60 220 300 3 0.01f 1"],
-		["6", "removeAnimatedTextOnCompletion", "3 at1"], 
-		["20", "removeTextbox", "2 tb1"],
-		["35", "fadeToNextScreen", "test1 3 3"]		
+		[
+			"0", 
+			"addBackground", 
+			"1 bg0 pic3.jpg"
+		],
+		[
+			"0", 
+			"addAnimatedText", 
+			"3 at0 1 libz4 60 320 300 3 0.001f 0"
+		],
+		[
+			"4", 
+			"addTextbox", 
+			"2 tb1 ai_box.png 50 25 700 210"
+		],
+		[
+			"4", 
+			"addAnimatedText", 
+			"3 at1 0 libz4 60 220 300 3 0.01f 1"
+		],
+		[
+			"6", 
+			"removeAnimatedTextOnCompletion", 
+			"3 at1"
+		], 
+		[
+			"20", 
+			"removeTextbox", 
+			"2 tb1"
+		],
+		[
+			"35", 
+			"fadeToNextScreen", 
+			"test1 3 3"
+		]		
 	]
 }

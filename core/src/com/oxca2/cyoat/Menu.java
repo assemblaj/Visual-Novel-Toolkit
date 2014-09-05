@@ -18,6 +18,7 @@ public class Menu extends InputAdapter {
 	int paddingV, paddingH;
 	float offset;
 	Vector3 mousePos;
+	Rectangle menuBounds;
 	
 	// int has a default value of 0, which interferes with the touchDown() method
 	int hoveredItem = -1; 
@@ -46,11 +47,18 @@ public class Menu extends InputAdapter {
 		
 		menuItems = new Array<MenuItem>();
 		mousePos = new Vector3();
+		menuBounds = new Rectangle();
+		menuBounds.x = menuX;
+		menuBounds.y = menuY += offset + space;
+		menuBounds.width = itemWidth;
+		menuBounds.height = itemHeight;
+
+		System.out.println("menuBoudsn.height: " + menuBounds.height);
 		
 		// Setting the default renderer. 
 		renderer = new MenuItemRenderer() {
 			public void drawHighlighted(Menu menu, MenuItem item){
-			game.fonts.get("vs_f5").setColor(Color.RED);;
+			game.fonts.get("vs_f5").setColor(Color.RED);
 			game.fonts.get("vs_f5").draw(game.batch, item.getName(), 
 					item.bounds.x, item.bounds.y + menu.offset);						
 			}
@@ -72,7 +80,7 @@ public class Menu extends InputAdapter {
 			currentItem = items.next();
 			mousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			game.camera.unproject(mousePos);		
-			
+
 			if (currentItem.getBounds().contains(mousePos.x, mousePos.y)){		
 				hoveredItem = counter;
 				renderer.drawHighlighted(this, currentItem);
@@ -80,6 +88,11 @@ public class Menu extends InputAdapter {
 				renderer.drawDefault(this, currentItem);
 			}
 			counter++;
+			
+			if (!menuBounds.contains(mousePos.x, mousePos.y)){
+				hoveredItem = -1;
+			}
+
 		}
 	}
 	
@@ -90,9 +103,11 @@ public class Menu extends InputAdapter {
 		
 		int counter = 0;
 		
+		System.out.println("hoveredItem: " + hoveredItem);
 		while(items.hasNext()){
 			currentItem = items.next();
 			if (counter == hoveredItem){
+				System.out.println("COUNTER IN touchDown: " + counter);
 				currentItem.runCommand();
 			}	
 			counter++;
@@ -118,18 +133,21 @@ public class Menu extends InputAdapter {
 	public void layoutMenu() {
 		Iterator<MenuItem> items = menuItems.iterator();
 		int lastPos =  menuY + ( menuItems.size * itemHeight) + (menuItems.size * space);
+		
 		while (items.hasNext()){
 			layoutItem(items.next(), lastPos);
 			lastPos -= space;
 			lastPos -= itemHeight;
 		}			
+		menuBounds.height = ( menuItems.size * itemHeight) + (menuItems.size * space);
+		menuY = lastPos;
 	}
 	
 	public void layoutItem(MenuItem item, int pos) {
 		item.getBounds().x = menuX; 
 		item.getBounds().y = pos;
 		item.getBounds().width = itemWidth;
-		item.getBounds().height = (int) game.fonts.get("vs_f5").getLineHeight();
+		item.getBounds().height = itemHeight;
 	}
 	
 	public abstract class MenuItem {

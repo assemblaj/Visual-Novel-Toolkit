@@ -40,7 +40,8 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	ObjectMap<String, Texture> textureAssets; // assets for the textures	
 	ObjectMap<String, LineTriggerObserver> lineObserverMap;
 	ObjectMap<String, AnimatedText> animatedTextMap;
-	
+	//ObjectMap<String, int>
+	//Array<int>
 	public SceneScreen(Main game, String scene) {
 		this.game = game;
 		data = SceneMaker.getData(scene);
@@ -411,12 +412,15 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	
 	// Use reflection to match trigger names in the file with their
 	// respective methods in the class. 
-	public void runTrigger(String[] trigger){
+	public void runTrigger(String[] trigger) {
 		String command = trigger[1].split(" ")[0];
 		
 		Method triggerMethod;
 		
 		try {
+			// It worked
+			//Class<?> cls = Class.forName("com.oxca2.cyoat.SceneScreen");
+			//triggerMethod = ClassReflection.getDeclaredMethod(cls, trigger[1], String.class);		
 			triggerMethod = ClassReflection.getDeclaredMethod(SceneScreen.class, trigger[1], String.class);
 			
 			// some of the trigger methods have no params

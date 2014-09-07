@@ -1,5 +1,7 @@
 package com.oxca2.cyoat;
 
+import com.badlogic.gdx.utils.Array;
+
 public class SceneData {
 
 	String[] startArray;
@@ -41,4 +43,11 @@ public class SceneData {
 	
 	//
 	int startLayers;
+	
+	// Menu Stuff 
+	String[][] menuData;
+	String[] menuItemNames;
+	
+	
+	Array<Trigger> timeBasedTriggers;
 }

@@ -147,7 +147,7 @@ public class MainMenu implements Screen, InputProcessor {
 			
 			//(menuItems.get(i).x + itemWidth / 2) - 50
 		//}
-		menu.draw();
+		menu.draw(game.batch);
 		game.batch.end();
 	}
 

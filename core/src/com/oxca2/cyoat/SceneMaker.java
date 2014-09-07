@@ -11,4 +11,5 @@ public class SceneMaker {
 				SceneData.class, 
 				Gdx.files.internal(scene + ".json"));
 	}
+	
 }

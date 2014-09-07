@@ -1,6 +1,7 @@
 package com.oxca2.cyoat;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameChoiceMenu extends Menu {
 	String prompt;
@@ -15,10 +16,27 @@ public class GameChoiceMenu extends Menu {
 		this.font = font;
 	}
 	
-	public void draw() {
+	public void draw(SpriteBatch batch) {
 		game.fonts.get(font).setColor(Color.WHITE);
-		game.fonts.get(font).drawMultiLine(game.batch, prompt, 
+		game.fonts.get(font).drawMultiLine(batch, prompt, 
 				menuItems.get(0).bounds.x, menuItems.get(0).bounds.y + this.offset*3);	
-		super.draw();
+		super.draw(batch);
+	}
+	
+	public class GameChoice extends MenuItem {
+		String[][] triggers;
+		SceneScreen scene;
+		
+		public GameChoice(String name, String[][] triggers, SceneScreen scene){
+			this.name = name;
+			this.triggers = triggers;
+			this.scene = scene;
+		}
+		
+		@Override
+		void runCommand() {
+			for (String[] trigger : triggers)
+				scene.runTrigger(trigger);
+		}
 	}
 }

@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.oxca2.cyoat.GameChoiceMenu.GameChoice;
 
 public class SceneScreen extends Observable implements Screen, Transitionable{
 	final Main game;
@@ -40,22 +41,37 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	ObjectMap<String, Texture> textureAssets; // assets for the textures	
 	ObjectMap<String, LineTriggerObserver> lineObserverMap;
 	ObjectMap<String, AnimatedText> animatedTextMap;
+	ObjectMap<String, GameChoiceMenu> menuMap;
+	ObjectMap<String, Integer> choiceMap;
+	
+	Array<ObjectMap<String, DrawingCommand>> newLayers;
+	
 	//ObjectMap<String, int>
 	//Array<int>
 	public SceneScreen(Main game, String scene) {
 		this.game = game;
 		data = SceneMaker.getData(scene);
 		
+		Array<Trigger> triggers =  data.timeBasedTriggers;
+		
+		initTriggers(triggers);
 		
 		currentDrawing = new Array<String>();
 		textureAssets = new ObjectMap<String, Texture>();
 		textAssets = new ObjectMap<String, String>();
 		lineObserverMap = new ObjectMap<String, LineTriggerObserver>();
 		animatedTextMap = new ObjectMap<String, AnimatedText>();
+		menuMap = new ObjectMap<String, GameChoiceMenu>();
+		choiceMap = new ObjectMap<String, Integer>();
 		
 		layers = new Array<ObjectMap<String, String>>();
-		for (int i = 0; i < data.startLayers; i++)
+		newLayers = new Array<ObjectMap<String, DrawingCommand>>();
+		
+		for (int i = 0; i < data.startLayers; i++){
 			layers.add(new ObjectMap<String, String>());
+			newLayers.add(new ObjectMap<String, DrawingCommand>());
+		}
+		//thing.get(2).execute();
 		
 		/*
 		String[] args;
@@ -124,9 +140,16 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 			}
 		}*/
 		
-		if (data.timeTriggers != null){
-			TimeTriggerHandler timer = new TimeTriggerHandler(this, data.timeTriggers);
+		if (data.timeBasedTriggers != null){
+			TimeTriggerHandler timer = new TimeTriggerHandler(this, data.timeBasedTriggers);
 		}
+	}
+	
+	public void initTriggers(Array<Trigger> triggers) {
+		for (Trigger trigger : triggers ){
+			trigger.setGame(game);
+			trigger.setScene(this);
+		}		
 	}
 	
 	@Override
@@ -162,10 +185,14 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		}
 		*/
 		
+		/*
 		Iterator<ObjectMap<String, String>> layerIter = layers.iterator();
 		Iterator<ObjectMap.Entry<String, String>> commandIter;
 		String command;
-		String[] args;
+		String[] args;*/
+		
+		Iterator<ObjectMap<String, DrawingCommand>> layerIter = newLayers.iterator();
+		Iterator<ObjectMap.Entry<String, DrawingCommand>> commandIter;
 		/*
 		while(layerIter.hasNext()){
 			commandIter = layerIter.next().iterator();
@@ -184,7 +211,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 				}
 			}
 		}*/
-		
+		/*
 		while(layerIter.hasNext()){
 			commandIter = layerIter.next().iterator();
 			
@@ -204,7 +231,16 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 				}else if (args[0].equals("drawStaticText")) {
 					game.fonts.get(args[4]).draw(batch, textAssets.get(args[2]),
 							Integer.parseInt(args[5]), Integer.parseInt(args[6]));
+				}else if (args[0].equals("drawMenu")){
+					menuMap.get(args[2]).draw(batch);
 				}
+			} 
+		}	*/
+		while(layerIter.hasNext()){
+			commandIter = layerIter.next().iterator();
+			
+			while (commandIter.hasNext()){
+				commandIter.next().value.draw(batch);
 			} 
 		}	
 	}
@@ -219,6 +255,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	
 	// Triggers 
 	
+	
 	public String[] addCommandToLayer(String trigger, String command) {
 		System.out.println("command: " + trigger);
 		String[] args = trigger.split(" ");
@@ -226,10 +263,21 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		return args;
 	}
 	
+	/// TRYING NEW SHIT RIGHT HERE
+	public void addCommandToLayer(DrawingCommand object){
+		// - 1 For array notation
+		newLayers.get(object.layer).put(object.id, object);
+	}
+	
+	
 	public String[] removeCommandFromLayer(String trigger) {
 		String[] args = trigger.split(" ");
 		layers.get(Integer.parseInt(args[0])- 1).remove(args[1]);
 		return args;
+	}
+	
+	public void removeCommandFromLayer(int layer, String id){
+		newLayers.get(layer).remove(id);
 	}
 	
 	public void playSoundEffect(String sfxPath) {
@@ -261,10 +309,21 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		textureAssets.put(args[1], new Texture(Gdx.files.internal(args[0]))); 
 	}
 	
+	public void setBackground(int layer, String id, Texture texture){ 
+		resetTriggerTexture(layer, id, texture);
+	}
+	
 	public void removeBackground(String command){
 		//currentDrawing.removeIndex(0);
 		String[] args = removeCommandFromLayer(command);
 		textureAssets.get(args[1]).dispose();
+	}
+	
+	public void removeBackground(Trigger object) {
+		
+		//newLayers.get(object.layer).get(object.id).texture.dispose();
+		//removeCommandFromLayer(object.layer, object.id);
+		removeTriggerWidthTexture(object);
 	}
 	
 	public void addBackground(String trigger){
@@ -285,9 +344,29 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		textureAssets.get(args[1]).dispose();
 	}
 	
-	public void setTextbox(String tbPath) {
-		textbox.dispose();
-		textbox = new Texture(Gdx.files.internal(tbPath));
+	
+	public void setTextbox(
+		int layer, String id, Texture newTexture,
+		int x, int y, int width, int height)
+	{
+		DrawingCommand command  = resetTriggerTexture(layer, id, newTexture);
+		command.setBounds(x, y, width, height);
+	}
+	
+	public void removeTriggerWidthTexture(Trigger object) {
+		newLayers.get(object.layer).get(object.id).texture.dispose();
+		removeCommandFromLayer(object.layer, object.id);
+	}
+	
+	public DrawingCommand resetTriggerTexture(int layer, String id, Texture newTexture) {
+		DrawingCommand command = newLayers.get(layer).get(id);
+		command.texture.dispose();
+		command.sprite = new Sprite(newTexture);
+		return command;
+	}
+	
+	public void removeTextbox(Trigger object) {
+		removeTriggerWidthTexture(object);
 	}
 	
 	public void addAnimatedText(String command) {
@@ -298,18 +377,26 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 				game, AnimatedText.join(data.animatedText[Integer.parseInt(args[2])], " "), args[3],
 				Integer.parseInt(args[4]), Integer.parseInt(args[5]),
 				Integer.parseInt(args[6]), Integer.parseInt(args[7]), Float.parseFloat(args[8])));
+		/*
 		if (data.lineTriggers != null){ 
 			if (data.lineTriggers[Integer.parseInt(args[9])] != null)
 				lineObserverMap.put(args[1], new LineTriggerObserver(this, data.lineTriggers[Integer.parseInt(args[9])]));
 				addObserver(lineObserverMap.get(args[2]));				
 				addObserver(new LineTriggerObserver(this, data.lineTriggers[Integer.parseInt(args[9])]));
-		}
+		}*/
 	}
 	
 	public void removeAnimatedText(String command) {
 		//currentDrawing.removeIndex(2);
 		String[] args = removeCommandFromLayer(command);
 		deleteObserver(lineObserverMap.get(args[1]));
+	}
+	
+	public void removeAnimatedText(Trigger object) {
+		DrawAnimatedText command = 
+				(DrawAnimatedText) newLayers.get(object.layer).get(object.id);	
+		command.clearObservers();
+		removeCommandFromLayer(object.layer, object.id);
 	}
 	
 	public void fadeToNextScreen(String args) {
@@ -404,10 +491,43 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		removeCommandFromLayer(trigger);
 	}
 	
+	public void removeStaticText(Trigger object){
+		removeCommandFromLayer(object.layer, object.id);
+	}
+	
 	public void removeAnimatedTextOnCompletion(String trigger) {
 		String[] args = trigger.split(" ");
 		System.out.println(" arg0: " + args[0] + " arg1: " + args[1]);
 		animatedTextMap.get(args[1]).addObserver(new CompletionObserver(this, trigger));
+	}
+	
+	// 11 is which menu
+	public void testMenu(String i) {
+		choiceMap.put("c1", 0);
+		if (choiceMap.get("c1") == 1) {
+			addBackground("1 bg0 pic3.jpg");
+		}else {
+			addBackground("1 bg0 ai4.jpg");
+		}
+	}
+	
+	public void addMenu(String trigger){
+		String[] args = addCommandToLayer(trigger, "drawMenu ");
+		menuMap.put(args[1], new GameChoiceMenu(game,
+				Integer.parseInt(args[2]),Integer.parseInt(args[3]),
+				Integer.parseInt(args[4]),Integer.parseInt(args[5]),
+				Integer.parseInt(args[6]),Integer.parseInt(args[7]),
+				Integer.parseInt(args[8]), game.fonts.get(args[10]).getLineHeight(),
+				args[9], args[10]));
+		
+		int menuNo = Integer.parseInt(args[11]);
+		int items = data.menuData[menuNo].length;
+		
+		menuMap.get(args[1]).add(
+				menuMap.get(args[1]).new GameChoice("Hello There",
+						data.menuData, this ));
+		menuMap.get(args[1]).layoutMenu();
+		Gdx.input.setInputProcessor(menuMap.get(args[1]));
 	}
 	
 	// Use reflection to match trigger names in the file with their
@@ -424,9 +544,9 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 			triggerMethod = ClassReflection.getDeclaredMethod(SceneScreen.class, trigger[1], String.class);
 			
 			// some of the trigger methods have no params
-			if (triggerMethod != null) 
+			if (triggerMethod != null) {
 				triggerMethod.invoke(this, trigger[2]);
-			else {
+			}else {
 				triggerMethod = ClassReflection.getDeclaredMethod(SceneScreen.class, trigger[1]);
 				triggerMethod.invoke(this);
 			}

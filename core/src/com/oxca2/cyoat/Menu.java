@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -57,25 +58,26 @@ public class Menu extends InputAdapter {
 		
 		// Setting the default renderer. 
 		renderer = new MenuItemRenderer() {
-			public void drawHighlighted(Menu menu, MenuItem item){
-			game.fonts.get("vs_f5").setColor(Color.RED);
-			game.fonts.get("vs_f5").draw(game.batch, item.getName(), 
-					item.bounds.x, item.bounds.y + menu.offset);						
+			public void drawHighlighted(Menu menu, MenuItem item, SpriteBatch batch){
+				game.fonts.get("vs_f5").setColor(Color.RED);
+				game.fonts.get("vs_f5").draw(batch, item.getName(), 
+						item.bounds.x, item.bounds.y + menu.offset);						
 			}
 			
-			public void drawDefault(Menu menu, MenuItem item){
-			game.fonts.get("vs_f5").setColor(Color.WHITE);;
-			game.fonts.get("vs_f5").draw(game.batch, item.getName(), 
-					item.bounds.x, item.bounds.y + menu.offset);							
+			public void drawDefault(Menu menu, MenuItem item, SpriteBatch batch){
+				game.fonts.get("vs_f5").setColor(Color.WHITE);;
+				game.fonts.get("vs_f5").draw(batch, item.getName(), 
+						item.bounds.x, item.bounds.y + menu.offset);							
 			}
 		};
 	}
 	
 	
-	public void draw() {
+	public void draw(SpriteBatch batch) {
 		int counter = 0;
 		MenuItem currentItem;
 		Iterator<MenuItem> items = menuItems.iterator();
+		
 		while (items.hasNext()){
 			currentItem = items.next();
 			mousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -83,9 +85,9 @@ public class Menu extends InputAdapter {
 
 			if (currentItem.getBounds().contains(mousePos.x, mousePos.y)){		
 				hoveredItem = counter;
-				renderer.drawHighlighted(this, currentItem);
+				renderer.drawHighlighted(this, currentItem, batch);
 			} else {
-				renderer.drawDefault(this, currentItem);
+				renderer.drawDefault(this, currentItem, batch);
 			}
 			counter++;
 			
@@ -139,8 +141,15 @@ public class Menu extends InputAdapter {
 			lastPos -= space;
 			lastPos -= itemHeight;
 		}			
+		
+		// Make the height of the bounds the height of the total amount
+		// of items, including spaces.
+		// Make the y value of the mounds the position that the
+		// last menu item was drawn at.
 		menuBounds.height = ( menuItems.size * itemHeight) + (menuItems.size * space);
+		/*
 		menuY = lastPos;
+		System.out.println("MenuY in layoutMenu: " + menuY);*/
 	}
 	
 	public void layoutItem(MenuItem item, int pos) {
@@ -175,8 +184,8 @@ public class Menu extends InputAdapter {
 	}
 	
 	public abstract class MenuItemRenderer {	
-		abstract void drawHighlighted(Menu menu, MenuItem item);
-		abstract void drawDefault(Menu menu, MenuItem item);
+		abstract void drawHighlighted(Menu menu, MenuItem item, SpriteBatch batch);
+		abstract void drawDefault(Menu menu, MenuItem item, SpriteBatch batch);
 	}
 }
 

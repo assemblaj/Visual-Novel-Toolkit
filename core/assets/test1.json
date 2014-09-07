@@ -32,39 +32,111 @@
 
 	"timeTriggers" : [
 		[
-			"0", 
-			"addBackground", 
-			"1 bg0 pic3.jpg"
-		],
-		[
-			"0", 
-			"addAnimatedText", 
-			"3 at0 1 libz4 60 320 300 3 0.001f 0"
-		],
+			"0",
+			"addMenu",
+			"4 menu1 5 100 100 40 200 5 5 Hey vs_f5 0"
+		]	
+	],
+	
+	
+	"menuData": [
 		[
 			"4", 
-			"addTextbox", 
+			"testMenu", 
 			"2 tb1 ai_box.png 50 25 700 210"
-		],
-		[
-			"4", 
-			"addAnimatedText", 
-			"3 at1 0 libz4 60 220 300 3 0.01f 1"
-		],
-		[
-			"6", 
-			"removeAnimatedTextOnCompletion", 
-			"3 at1"
-		], 
-		[
-			"20", 
-			"removeTextbox", 
-			"2 tb1"
-		],
-		[
-			"35", 
-			"fadeToNextScreen", 
-			"test1 3 3"
-		]		
+		]
+	],
+	
+	"timeBasedTriggers" : [
+		{
+			"class" : "com.oxca2.cyoat.AddNewBackground",
+			"layer": 0,
+			"id" : "bg0",
+			"bgPath" : "ai1.jpg",
+			"time" : 0
+		},
+		{
+			"class" : "com.oxca2.cyoat.SetBackground",
+			"layer": 0,
+			"id" : "bg0",
+			"bgPath" : "pic3.jpg",
+			"time" : 2
+		},		
+		{
+			"class" : "com.oxca2.cyoat.SetBackground",
+			"layer": 0,
+			"id" : "bg0",
+			"bgPath" : "ai5.jpg",
+			"time" : 5
+		},		
+		{
+			"class" : "com.oxca2.cyoat.RemoveBackground",
+			"layer" : 0,
+			"id" : "bg0", 
+			"time" : 10
+		},
+		{
+			"class" : "com.oxca2.cyoat.AddTextbox",
+			"layer" : 1,
+			"id" : "tb0",
+			"time" : 5,
+			"bgPath" : "ai_box.png",
+			"x" : 50, 
+			"y" : 25, 
+			"width" : 700,
+			"height" :  210
+		},
+		{
+			"class" : "com.oxca2.cyoat.SetTextbox",
+			"layer" : 1,
+			"id" : "tb0",
+			"time" : 10,
+			"bgPath" : "tb2.png",
+			"x" : 50, 
+			"y" : 25, 
+			"width" : 700,
+			"height" :  210		
+		},
+		{	
+			"class" : "com.oxca2.cyoat.AddAnimatedText",
+			"layer" : 2,
+			"id" : "at0",
+			"time" : 10,
+			
+			"textArray" : [
+				"Hello World. I'm just testing my program. ",
+				"Don't mind me. "
+			], 
+			
+			"font" : "vs_f5",
+			
+			"x" : 60, 
+			"y" : 220, 
+			"lineLength" : 300,
+			"maxLines" :  3, 
+			"speed" : 0.01f		
+		},
+		{	
+			"class" : "com.oxca2.cyoat.RemoveAnimatedText",
+			"layer" : 2,
+			"id" : "at0",
+			"time" : 15
+		},
+		{
+			"class" : "com.oxca2.cyoat.AddStaticText",
+			"layer" : 3,
+			"id" : "st0",
+			"time" : 2,
+			"text" : "I love programming!",
+			"x" : 80,
+			"y" : 350,
+			"font" : "libz4"		
+		},
+		{
+			"class" : "com.oxca2.cyoat.RemoveStaticText",
+			"layer" : 3,
+			"id" : "st0",
+			"time" : 15		
+		}						
 	]
 }

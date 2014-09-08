@@ -36,6 +36,7 @@ Other Features
 
 Features to come
 -----------------------
+- Ability to speciiy class in file by the name and not the full qualified name.
 - Menu based decisions (along with Map to store choices made by user)
 - Class for Custom Triggers 
 - Class for triggers to be performed on completion of another trigger 

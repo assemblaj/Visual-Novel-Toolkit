@@ -5,10 +5,34 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.Timer.Task;
+import com.oxca2.cyoat.GameChoiceMenu.GameChoice;
 
+// dataID
+// TriggerID
+
+/*
+ * There is a difference between dataID and triggerID
+ * 
+ * triggerID would be the ID for that specific trigger.
+ * This is used to get triggers out of the triggerMap,
+ * map triggers to menu items, etc
+ * 
+ * dataID is used to identify the data that the trigger is working 
+ * with, i.e what will be drawn to the screen in a DrawingComand, etc.
+ * Multiple triggers can work with the same data, for 
+ * example, multiple triggers can work with the same Sprite/Texture.
+ * Specifically, dataIDs are used to specify which command either 
+ * already works with the data, or the id of the command which 
+ * will work with the data.  
+ */
 public abstract class Trigger {
 	int type;
-	String id;
+	
+	String dataID; 
+	String triggerID; //if it's a menu item, it has a unique ID for itself as a menu item. 
 	String name;
 	int layer;
 	int time;
@@ -29,6 +53,9 @@ public abstract class Trigger {
 	}
 }
 
+/* The IDs for the Commands are the dataIDs
+ * for the triggers
+ */
 abstract class DrawingCommand {
 	SpriteBatch batch;
 	Sprite sprite;
@@ -50,12 +77,47 @@ abstract class DrawingCommand {
 }
 
 
+abstract class MultiTriggerSequence extends Trigger{
+	Array<Trigger> triggers = new Array<Trigger>();	
+	String[] triggerIDs;
+	
+
+	protected void mapIDsToTriggers() {
+		ObjectMap<String, Trigger> map = scene.getTriggers();
+		
+		for (String id  : triggerIDs)
+			triggers.add(map.get(id));		
+	}
+}
+	
+class StartTimeBasedSequence extends MultiTriggerSequence {
+	
+	@Override
+	void execute() {
+		mapIDsToTriggers();
+		TimeTriggerHandler.scheduleTriggers(triggers);
+	}
+	
+}
+
+class RunMultipleTriggers extends MultiTriggerSequence {
+
+	
+	@Override
+	void execute() {
+		mapIDsToTriggers();
+		for (Trigger trigger: triggers)
+			trigger.execute();
+	}
+		
+}
+
 class AddNewBackground extends Trigger {
 	String bgPath;
 	
 	@Override
 	void execute() {
-		scene.addCommandToLayer(new DrawBackground(layer, id, bgPath));
+		scene.addCommandToLayer(new DrawBackground(layer, dataID, bgPath));
 	}
 }
 
@@ -64,7 +126,7 @@ class SetBackground extends Trigger {
 	
 	@Override
 	void execute() {
-		scene.setBackground(layer, id, new Texture(Gdx.files.internal(bgPath)));
+		scene.setBackground(layer, dataID, new Texture(Gdx.files.internal(bgPath)));
 	}	
 }
 
@@ -98,7 +160,7 @@ class AddTextbox extends Trigger {
 	@Override
 	void execute() {
 		scene.addCommandToLayer(
-			new DrawTextbox(layer, id, bgPath,
+			new DrawTextbox(layer, dataID, bgPath,
 			x, y, width, height));
 	}
 }
@@ -111,7 +173,7 @@ class SetTextbox extends Trigger {
 	@Override
 	void execute() {
 		scene.setTextbox(
-			layer, id, new Texture(Gdx.files.internal(bgPath)), 
+			layer, dataID, new Texture(Gdx.files.internal(bgPath)), 
 			x, y, width, height);
 	}
 	
@@ -164,7 +226,7 @@ class AddAnimatedText extends Trigger {
 	@Override
 	void execute() {
 		scene.addCommandToLayer(
-				new DrawAnimatedText(layer, id, game,
+				new DrawAnimatedText(layer, dataID, game,
 				AnimatedText.join(textArray, " "), lineTriggers,
 				font, x, y, lineLength, maxLines, speed));		
 	}
@@ -221,7 +283,7 @@ class AddStaticText extends Trigger {
 	void execute() {
 		scene.addCommandToLayer(
 			new DrawStaticText(
-			game, layer, id, text, x, y, font));
+			game, layer, dataID, text, x, y, font));
 	}
 	
 }
@@ -265,17 +327,28 @@ class DrawStaticText extends DrawingCommand {
 	
 }
 
-class AddMenu extends Trigger {
-
+class AddGameChoiceMenu extends Trigger {
+	int space,  menuX,  menuY;
+	int itemHeight, itemWidth, paddingV,  paddingH;
+	float offset;
+	String prompt; 
+	String font; 
+	String[] itemIDs;
+	
 	@Override
 	void execute() {
-				
+		offset = game.fonts.get(font).getLineHeight();
+		
+		scene.addCommandToLayer(
+				new DrawGameChoiceMenu(layer, dataID, game, space, menuX, menuY,
+				    itemHeight, itemWidth,  paddingV, paddingH,
+				    offset, prompt, font, itemIDs, scene));				
 	}
 	
 	
 }
 
-class RemoveMenu extends Trigger {
+class RemoveGameChoiceMenu extends Trigger {
 
 	@Override
 	void execute() {
@@ -285,11 +358,43 @@ class RemoveMenu extends Trigger {
 	
 }
 
-class DrawMenu extends DrawingCommand {
-
+class DrawGameChoiceMenu extends DrawingCommand {
+	GameChoiceMenu menu;
+	Array<Trigger> menuItems;
+	ObjectMap<String, Trigger> map;
+	
+	public DrawGameChoiceMenu(int layer, String id, Main main,
+			int space, int menuX, int menuY,
+			int itemHeight, int itemWidth, 
+			int paddingV, int paddingH,
+			float offset, String prompt, String font, 
+			String[] itemIDs, SceneScreen scene)
+	{
+		this.layer = layer;
+		this.id = id;
+		menuItems = new Array<Trigger>();
+		map = scene.getTriggers();
+		
+		for (int i = 0; i < itemIDs.length; i++){
+			menuItems.add(map.get(itemIDs[i]));
+		}
+		
+		menu = new GameChoiceMenu(main, space, 
+			menuX, menuY, itemHeight, itemWidth,
+			paddingV, paddingH, offset, prompt, font);
+		
+		for (Trigger item: menuItems)
+			menu.add(menu.new GameChoice("test", item, scene) );
+		
+		menu.layoutMenu();
+		Gdx.input.setInputProcessor(menu);
+	}
+	
 	@Override
 	void draw(SpriteBatch batch) {
-				
+		menu.draw(batch);		
 	}
 	
 }
+
+

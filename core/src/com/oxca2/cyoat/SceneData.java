@@ -50,4 +50,8 @@ public class SceneData {
 	
 	
 	Array<Trigger> timeBasedTriggers;
+	Array<Trigger> gameChoices;
+	Array<Trigger> triggerList;
+	Trigger initalTrigger;
+	Trigger sceneStarter;
 }

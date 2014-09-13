@@ -17,7 +17,7 @@ public class CompletionObserver implements Observer{
 		timer = new Timer();
 		command = new Timer.Task() {
 			public void run() {
-				scene.removeAnimatedText(data);
+				//scene.removeAnimatedText(data);
 			}
 		};
 	}

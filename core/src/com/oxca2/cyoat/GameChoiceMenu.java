@@ -23,20 +23,25 @@ public class GameChoiceMenu extends Menu {
 		super.draw(batch);
 	}
 	
+	
 	public class GameChoice extends MenuItem {
-		String[][] triggers;
+		//String[][] triggers;
 		SceneScreen scene;
+		Trigger trigger;
 		
-		public GameChoice(String name, String[][] triggers, SceneScreen scene){
+		public GameChoice(String name, Trigger trigger, SceneScreen scene){
 			this.name = name;
-			this.triggers = triggers;
+			this.trigger = trigger;
 			this.scene = scene;
 		}
 		
 		@Override
 		void runCommand() {
-			for (String[] trigger : triggers)
-				scene.runTrigger(trigger);
+					/*
+		for (String[] trigger : triggers)
+			scene.runTrigger(trigger);*/
+			trigger.execute();
 		}
 	}
 }
+

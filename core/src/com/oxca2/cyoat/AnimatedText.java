@@ -38,6 +38,9 @@ public class AnimatedText extends Observable {
 	
 	int dx, dy;
 	
+	boolean clickOnce = false;
+	boolean clickable = true;
+	
 	public AnimatedText(
 		Main game, String text, String font,
 		int dx, int dy, 
@@ -64,10 +67,13 @@ public class AnimatedText extends Observable {
 			@Override
 			public boolean keyDown(int keycode){
 				if (keycode == Keys.SPACE){
-					processIntput();		
-					setChanged();
-					notifyObservers();
-					return true;
+					if (clickable) {
+						processIntput();		
+						setChanged();
+						notifyObservers();
+						return true;
+					} else 
+						return false;
 				} else 
 					return false;
 						
@@ -78,11 +84,14 @@ public class AnimatedText extends Observable {
 				int screenX, int screenY, 
 				int pointer, int button)
 			{	
-				if (button == Buttons.LEFT) {		
-					processIntput();
-					setChanged();
-					notifyObservers();
-					return true;
+				if (button == Buttons.LEFT) {	
+					if (clickable) {
+						processIntput();		
+						setChanged();
+						notifyObservers();
+						return true;
+					} else 
+						return false;
 				}else 
 				   return false;
 			}
@@ -149,9 +158,11 @@ public class AnimatedText extends Observable {
 		System.out.println("current.length(): " + current.length());
 		System.out.println("current: " + current);
 		*/
-		/*
-		setChanged();
-		notifyObservers(l);*/
+		
+		if (! clickable){
+			setChanged();
+			notifyObservers(l);
+		}
 	}
 	
 	//Wraps the text so that it fits a certain

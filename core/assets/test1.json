@@ -153,7 +153,7 @@
 			"font" : "vs_f5"
 		},
 		{
-			"class" : "com.oxca2.cyoat.RunAfterAnimatedText",
+			"class" : "com.oxca2.cyoat.RunDirectlyAfterAnimatedText",
 			"dataID" : "at0",
 			"layer" : 2,
 			"delay" : .8f,

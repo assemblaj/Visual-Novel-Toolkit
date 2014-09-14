@@ -113,7 +113,7 @@ class RunMultipleTriggers extends MultiTriggerSequence {
 }
 
 
-class RunAfterAnimatedText extends MultiTriggerSequence {
+class RunAfterAnimatedTextClicked extends MultiTriggerSequence {
 	DrawAnimatedText animCommand;
 	
 	float delay;
@@ -123,9 +123,24 @@ class RunAfterAnimatedText extends MultiTriggerSequence {
 		mapIDsToTriggers();
 		animCommand = (DrawAnimatedText) scene.getLayers().get(layer).get(dataID);
 		animCommand.animText.addObserver(
-				new AnimatedTextCompletionObserver(scene, triggers, delay));
+				new AnimatedTextAfterClickObserver(scene, triggers, delay));
 	}
 	
+	
+}
+
+class RunDirectlyAfterAnimatedText extends MultiTriggerSequence {
+	DrawAnimatedText animCommand;
+	float delay;
+	
+	@Override
+	void execute() {
+		mapIDsToTriggers();
+		animCommand = (DrawAnimatedText) scene.getLayers().get(layer).get(dataID);
+		animCommand.animText.clickable = false;
+		animCommand.animText.addObserver(
+				new AnimatedTextImmediateObserver(scene, triggers, delay));
+	}
 	
 }
 

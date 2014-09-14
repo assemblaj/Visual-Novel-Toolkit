@@ -46,9 +46,9 @@ public abstract class CompletionObserver implements Observer{
 	}
 }
 
-class AnimatedTextCompletionObserver extends CompletionObserver {
+class AnimatedTextAfterClickObserver extends CompletionObserver {
 
-	public AnimatedTextCompletionObserver(
+	public AnimatedTextAfterClickObserver(
 		SceneScreen scene, Array<Trigger> triggers, float delay) 
 	{
 		super(scene, triggers, delay);
@@ -58,8 +58,28 @@ class AnimatedTextCompletionObserver extends CompletionObserver {
 	@Override
 	public void update(Observable animText, Object arg){
 		AnimatedText object = (AnimatedText) animText;
+		if (object.finished() && !object.clickOnce){
+			Timer.schedule(trigger, delay);
+			object.clickOnce = true;
+			
+		}
+	}
+}
+
+class AnimatedTextImmediateObserver extends CompletionObserver {
+
+	public AnimatedTextImmediateObserver(SceneScreen scene,
+			Array<Trigger> triggers, float delay) 
+	{
+		super(scene, triggers, delay);
+	}
+	
+	@Override
+	public void update(Observable animText, Object arg){
+		AnimatedText object = (AnimatedText) animText;
 		if (object.finished()){
 			Timer.schedule(trigger, delay);
 		}
 	}
+	
 }

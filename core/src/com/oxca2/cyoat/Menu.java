@@ -74,15 +74,21 @@ public class Menu extends InputAdapter {
 	}
 	
 	
+	/*
+	 *  Hovered items are identified here based on 
+	 *  whether or not the mouse is inside the bounds
+	 *  (Rectangle) of the menuITem. If the are, the
+	 *  item is highlighted.
+	 */
 	public void draw(SpriteBatch batch) {		
 		MenuItem currentItem;
 		Iterator<MenuItem> items = menuItems.iterator();
 		
+		mousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+		game.camera.unproject(mousePos);		
+		
 		while (items.hasNext()){
 			currentItem = items.next();
-			mousePos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-			game.camera.unproject(mousePos);		
-
 			if (currentItem.getBounds().contains(mousePos.x, mousePos.y)){		
 				hoveredItem = currentItem;
 				renderer.drawHighlighted(this, currentItem, batch);
@@ -92,6 +98,11 @@ public class Menu extends InputAdapter {
 		}
 	}
 	
+	/*
+	 * Here, after the user has clicked, we loop through 
+	 * to see what was hovered when the user clicked and them 
+	 * we execute that item's command. 
+	 */
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {			
 		Iterator<MenuItem> items = menuItems.iterator();

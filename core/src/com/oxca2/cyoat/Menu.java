@@ -19,10 +19,11 @@ public class Menu extends InputAdapter {
 	int paddingV, paddingH;
 	float offset;
 	Vector3 mousePos;
-	Rectangle menuBounds;
+	Rectangle menuBounds;	
+	MenuItem hoveredItem;
 	
 	// int has a default value of 0, which interferes with the touchDown() method
-	int hoveredItem = -1; 
+	//int hoveredItem = -1; 
 	
 	MenuItemRenderer renderer;
 	
@@ -73,8 +74,7 @@ public class Menu extends InputAdapter {
 	}
 	
 	
-	public void draw(SpriteBatch batch) {
-		int counter = 0;
+	public void draw(SpriteBatch batch) {		
 		MenuItem currentItem;
 		Iterator<MenuItem> items = menuItems.iterator();
 		
@@ -84,36 +84,26 @@ public class Menu extends InputAdapter {
 			game.camera.unproject(mousePos);		
 
 			if (currentItem.getBounds().contains(mousePos.x, mousePos.y)){		
-				hoveredItem = counter;
+				hoveredItem = currentItem;
 				renderer.drawHighlighted(this, currentItem, batch);
 			} else {
 				renderer.drawDefault(this, currentItem, batch);
 			}
-			counter++;
-			
-			if (!menuBounds.contains(mousePos.x, mousePos.y)){
-				hoveredItem = -1;
-			}
-
 		}
 	}
 	
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {			
 		Iterator<MenuItem> items = menuItems.iterator();
-		MenuItem currentItem;
-		
-		int counter = 0;
-		
-		System.out.println("hoveredItem: " + hoveredItem);
+		MenuItem testItem;
+				
 		while(items.hasNext()){
-			currentItem = items.next();
-			if (counter == hoveredItem){
-				System.out.println("COUNTER IN touchDown: " + counter);
-				currentItem.runCommand();
-			}	
-			counter++;
+			testItem = items.next();
+			
+			if (testItem.equals(hoveredItem))
+				testItem.runCommand();
 		}
+		
 		return false;
 	}
 	

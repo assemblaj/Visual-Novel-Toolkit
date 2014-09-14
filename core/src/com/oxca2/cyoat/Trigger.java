@@ -112,6 +112,23 @@ class RunMultipleTriggers extends MultiTriggerSequence {
 		
 }
 
+
+class RunAfterAnimatedText extends MultiTriggerSequence {
+	DrawAnimatedText animCommand;
+	
+	float delay;
+	
+	@Override
+	void execute() {
+		mapIDsToTriggers();
+		animCommand = (DrawAnimatedText) scene.getLayers().get(layer).get(dataID);
+		animCommand.animText.addObserver(
+				new AnimatedTextCompletionObserver(scene, triggers, delay));
+	}
+	
+	
+}
+
 class AddNewBackground extends Trigger {
 	String bgPath;
 	
@@ -332,8 +349,10 @@ class AddGameChoiceMenu extends Trigger {
 	int itemHeight, itemWidth, paddingV,  paddingH;
 	float offset;
 	String prompt; 
+	int promptSpace;
 	String font; 
 	String[] itemIDs;
+	String[] itemNames;
 	
 	@Override
 	void execute() {
@@ -342,7 +361,7 @@ class AddGameChoiceMenu extends Trigger {
 		scene.addCommandToLayer(
 				new DrawGameChoiceMenu(layer, dataID, game, space, menuX, menuY,
 				    itemHeight, itemWidth,  paddingV, paddingH,
-				    offset, prompt, font, itemIDs, scene));				
+				    offset, prompt, promptSpace, font, itemIDs, itemNames, scene));				
 	}
 	
 	
@@ -367,8 +386,9 @@ class DrawGameChoiceMenu extends DrawingCommand {
 			int space, int menuX, int menuY,
 			int itemHeight, int itemWidth, 
 			int paddingV, int paddingH,
-			float offset, String prompt, String font, 
-			String[] itemIDs, SceneScreen scene)
+			float offset, String prompt, int promptSpace, 
+			String font, String[] itemIDs, 
+			String[] itemNames, SceneScreen scene)
 	{
 		this.layer = layer;
 		this.id = id;
@@ -381,10 +401,13 @@ class DrawGameChoiceMenu extends DrawingCommand {
 		
 		menu = new GameChoiceMenu(main, space, 
 			menuX, menuY, itemHeight, itemWidth,
-			paddingV, paddingH, offset, prompt, font);
+			paddingV, paddingH, offset, prompt, promptSpace, font);
 		
-		for (Trigger item: menuItems)
-			menu.add(menu.new GameChoice("test", item, scene) );
+		int counter = 0;
+		for (Trigger item: menuItems){
+			menu.add(menu.new GameChoice(itemNames[counter], item, scene) );
+			counter++;
+		}
 		
 		menu.layoutMenu();
 		Gdx.input.setInputProcessor(menu);
@@ -396,5 +419,6 @@ class DrawGameChoiceMenu extends DrawingCommand {
 	}
 	
 }
+
 
 

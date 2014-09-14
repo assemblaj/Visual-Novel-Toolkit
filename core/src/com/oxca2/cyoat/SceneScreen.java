@@ -66,6 +66,9 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		return triggerMap;
 	}
 	
+	public Array<ObjectMap<String, DrawingCommand>> getLayers() {
+		return layers;
+	}
 	
 	private void startScene() {
 		sceneStarter = data.sceneStarter;
@@ -127,6 +130,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		draw(batch);
 		batch.end();
 	}
+	
 	
 	// Triggers 
 	public void addCommandToLayer(DrawingCommand object){
@@ -284,8 +288,6 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	}
 	
 	public void removeAnimatedTextOnCompletion(String trigger) {
-		String[] args = trigger.split(" ");
-		System.out.println(" arg0: " + args[0] + " arg1: " + args[1]);
 		//animatedTextMap.get(args[1]).addObserver(new CompletionObserver(this, trigger));
 	}
 	

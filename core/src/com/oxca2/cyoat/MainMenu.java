@@ -85,7 +85,7 @@ public class MainMenu implements Screen, InputProcessor {
 			game, space, 
 			menuX, menuY, 
 			itemHeight, itemWidth, 
-			paddingV, paddingH, offset, "What would you like to do?\nClick one of the options", "vs_f5");
+			paddingV, paddingH, offset, "What would you like to do?\nClick one of the options", 100,"vs_f5");
 		menu.add(menu.new MenuItem() {
 			public void runCommand() {
 				game.setScreen(new SceneScreen(game, "test1"));

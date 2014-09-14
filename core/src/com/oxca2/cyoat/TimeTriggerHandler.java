@@ -12,6 +12,9 @@ public class TimeTriggerHandler extends Timer {
 		}
 	}
 	
+	public static void scheduleTrigger(Trigger trigger){
+		Timer.instance().scheduleTask(new TimeBasedTrigger(trigger), trigger.time);
+	}
 	
 	public static class TimeBasedTrigger extends Task {
 		Trigger thing;

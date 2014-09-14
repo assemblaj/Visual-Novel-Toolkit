@@ -149,8 +149,9 @@ public class AnimatedText extends Observable {
 		System.out.println("current.length(): " + current.length());
 		System.out.println("current: " + current);
 		*/
+		/*
 		setChanged();
-		notifyObservers(l);
+		notifyObservers(l);*/
 	}
 	
 	//Wraps the text so that it fits a certain

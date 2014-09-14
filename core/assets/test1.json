@@ -5,7 +5,7 @@
 	{
 		"class" : "com.oxca2.cyoat.RunMultipleTriggers",
 		"triggerIDs" : [
-			"t1", "t4","t6", "t8"]	
+			"t1", "t4","t6", "compl_1"]	
 	},
 	
 	"triggerList" : [
@@ -140,15 +140,26 @@
 			"triggerID" : "t11",
 			"time" : 20, 
 			"itemIDs" : ["mi1", "mi2", "mi3"],
+			"itemNames" : ["Set background 1", "Set background 2", "Remove Background"],
 			"space" : 5,
-			"menuX" : 25,
-			"menuY" : 100,
+			"menuX" : 60,
+			"menuY" : 95,
 			"itemHeight" : 20,
 			"itemWidth" : 200,
 			"paddingV" : 5,
 			"paddingH" : 5, 
-			"prompt" : "hey",
+			"prompt" : "Make a selection!",
+			"promptSpace" : 55,
 			"font" : "vs_f5"
+		},
+		{
+			"class" : "com.oxca2.cyoat.RunAfterAnimatedText",
+			"dataID" : "at0",
+			"layer" : 2,
+			"delay" : .8f,
+			"triggerID" : "compl_1",
+			"triggerIDs" : ["t7", "t11"],
+		
 		}		
 	]
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.oxca2.cyoat.GameChoiceMenu.GameChoice;
 
@@ -55,6 +56,45 @@ public abstract class Trigger {
 	}
 }
 
+abstract class UpdateCommand {
+	String id;
+	abstract void update(float delta);
+	abstract void end();
+}
+
+class FadeOutMusic extends UpdateCommand {
+	MusicCommand music;
+	SceneScreen scene;
+	public FadeOutMusic(String id, SceneScreen scene) {
+		this.id = id;
+		this.music = (MusicCommand) scene.getAudio(id);
+	}
+	
+	@Override
+	void update(float delta) {
+		float volume = music.getVolume();
+		if (volume - .01f >= 0f){
+			music.setVolume(volume - .01f);
+		}else {
+			end();
+		}
+	}
+
+	@Override
+	void end() {
+		scene.removeAudio(music);
+		scene.removeUpdate(this);
+	}		
+}
+
+class StartMusicFadeOut extends Trigger {
+
+	@Override
+	void execute() {
+		scene.addUpdate(new FadeOutMusic(dataID, scene));
+	}
+	
+}
 /* The IDs for the Commands are the dataIDs
  * for the triggers
  */
@@ -88,6 +128,7 @@ abstract class AudioCommand {
 	abstract void play();
 	abstract void stop();
 	abstract void setVolume(float volume);
+	abstract float getVolume();
 	abstract void setLooping(boolean looping);
 	abstract void dispose();
 	
@@ -129,6 +170,11 @@ class SoundCommand extends AudioCommand {
 	public void setLooping(boolean looping) {
 		this.looping = looping;
 	}
+
+	@Override
+	float getVolume() {
+		return volume;
+	}
 }
 
 class MusicCommand extends AudioCommand{
@@ -155,7 +201,8 @@ class MusicCommand extends AudioCommand{
 	void setVolume(float volume) {
 		music.setVolume(volume);
 	}
-
+	
+	
 	@Override
 	void setLooping(boolean looping) {
 		music.setLooping(looping);
@@ -164,6 +211,11 @@ class MusicCommand extends AudioCommand{
 	@Override
 	void dispose() {
 		music.dispose();
+	}
+
+	@Override
+	float getVolume() {
+		return music.getVolume();
 	}
 }
 

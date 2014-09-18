@@ -97,8 +97,9 @@ class SoundCommand extends AudioCommand {
 	Sound sound;
 	long soundID;
 	
-	public SoundCommand(String path, float volume, boolean looping){
+	public SoundCommand(String path, String id, float volume, boolean looping){
 		sound = Gdx.audio.newSound(Gdx.files.internal(path));
+		this.id = id;
 		this.volume = volume;
 		this.looping = looping;
 		
@@ -133,8 +134,9 @@ class SoundCommand extends AudioCommand {
 class MusicCommand extends AudioCommand{
 	Music music;
 	
-	public void MusicCommand(String path, float volume, boolean looping){
+	public void MusicCommand(String path, String id,  float volume, boolean looping){
 		music = Gdx.audio.newMusic(Gdx.files.internal(path));
+		this.id = id;
 		this.volume = volume;
 		this.looping = looping;
 	}
@@ -162,6 +164,25 @@ class MusicCommand extends AudioCommand{
 	@Override
 	void dispose() {
 		music.dispose();
+	}
+}
+
+class AddSound extends Trigger {
+	String path; 
+	float volume;
+	boolean looping;
+	
+	@Override
+	void execute() {
+		scene.addAudio(new SoundCommand(path, dataID, volume, looping));
+	}
+}
+
+class PlaySound extends Trigger {
+
+	@Override
+	void execute() {
+		scene.getAudio(dataID).play();
 	}
 }
 

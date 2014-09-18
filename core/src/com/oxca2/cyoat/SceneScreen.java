@@ -41,8 +41,9 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 
 	public SceneScreen(Main game, String scene) {
 		this.game = game;
+		// Get the Scene data from the jSon file
 		data = SceneMaker.getData(scene);
-		
+				
 		// Get the triggers from the jSon file 
 		// and give each trigger a reference to
 		// Main game and the Scene
@@ -59,6 +60,9 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		// Fill the layer array with empty objectMaps based on 
 		// how many layers were specified in the file. 
 		initLayers(); 
+		
+		// Create the Map for audio objects. 
+		audio = new ObjectMap<String, AudioCommand>();
 		
 		startScene();
 	}
@@ -146,6 +150,14 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	
 	public void removeCommandFromLayer(int layer, String id){
 		layers.get(layer).remove(id);
+	}
+	
+	public void addAudio(AudioCommand command) {
+		audio.put(command.id, command);
+	}
+	
+	public AudioCommand getAudio(String id){
+		return audio.get(id);
 	}
 	
 	public void playSoundEffect(String sfxPath) {

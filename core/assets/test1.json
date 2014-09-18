@@ -5,7 +5,7 @@
 	{
 		"class" : "com.oxca2.cyoat.RunMultipleTriggers",
 		"triggerIDs" : [
-			"t12", "compl_2"]	
+			"t12", "t17", "t18", "compl_2"]	
 	},
 	
 	"triggerList" : [
@@ -247,6 +247,20 @@
 			"prompt" : "Do you go in?",
 			"promptSpace" : 55,
 			"font" : "vs_f5"
-		}									
+		},
+		{
+			"class" : "com.oxca2.cyoat.AddSound",
+			"dataID" : "s0",
+			"triggerID" : "t17",
+			"time" : 15,		
+			"path" : "scream.mp3",
+			"volume" : .5f,
+			"looping" : false
+		},		
+		{
+			"class" : "com.oxca2.cyoat.PlaySound",
+			"dataID" : "s0",
+			"triggerID" : "t18"
+		}								
 	]
 }

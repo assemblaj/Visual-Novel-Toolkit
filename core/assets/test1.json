@@ -5,7 +5,7 @@
 	{
 		"class" : "com.oxca2.cyoat.RunMultipleTriggers",
 		"triggerIDs" : [
-			"t1", "t4","t6", "compl_1"]	
+			"t12", "compl_2"]	
 	},
 	
 	"triggerList" : [
@@ -160,6 +160,93 @@
 			"triggerID" : "compl_1",
 			"triggerIDs" : ["t7", "t11"],
 		
-		}		
+		},
+		{
+			"class" : "com.oxca2.cyoat.AddAnimatedText",
+			"layer" : 2,
+			"dataID" : "at0",
+			"triggerID" : "t12",
+			"time" : 10,
+			
+			"textArray" : [
+				"You walk into the forest. "
+			], 
+			
+			"font" : "vs_f5",
+			
+			"x" : 60, 
+			"y" : 420, 
+			"lineLength" : 300,
+			"maxLines" :  3, 
+			"speed" : 0.01f			
+		},
+		{
+			"class" : "com.oxca2.cyoat.RunDirectlyAfterAnimatedText",
+			"dataID" : "at0",
+			"layer" : 2,
+			"delay" : .8f,
+			"triggerID" : "compl_2",
+			"triggerIDs" : ["t13", "compl_3"],
+		},		
+		{
+			"class" : "com.oxca2.cyoat.AddAnimatedText",
+			"layer" : 2,
+			"dataID" : "at1",
+			"triggerID" : "t13",
+			"time" : 10,
+			
+			"textArray" : [
+				"You see an old black house. "
+			], 
+			
+			"font" : "vs_f5",
+			
+			"x" : 60, 
+			"y" : 350, 
+			"lineLength" : 300,
+			"maxLines" :  3, 
+			"speed" : 0.01f			
+		},
+		{
+			"class" : "com.oxca2.cyoat.RunDirectlyAfterAnimatedText",
+			"dataID" : "at1",
+			"layer" : 2,
+			"delay" : .8f,
+			"triggerID" : "compl_3",
+			"triggerIDs" : ["t14", "t15", "t16"],
+		},
+		{	
+			"class" : "com.oxca2.cyoat.RemoveAnimatedText",
+			"layer" : 2,
+			"dataID" : "at0",
+			"triggerID" : "t14",
+			"time" : 15
+		},
+		{	
+			"class" : "com.oxca2.cyoat.RemoveAnimatedText",
+			"layer" : 2,
+			"dataID" : "at1",
+			"triggerID" : "t15",
+			"time" : 15
+		},	
+		{
+			"class" : "com.oxca2.cyoat.AddGameChoiceMenu",
+			"layer" : 3,
+			"dataID" : "m1",
+			"triggerID" : "t16",
+			"time" : 20, 
+			"itemIDs" : ["mi1", "mi2"],
+			"itemNames" : ["Set background 1", "Set background 2", "Remove Background"],
+			"space" : 5,
+			"menuX" : 60,
+			"menuY" : 320,
+			"itemHeight" : 20,
+			"itemWidth" : 200,
+			"paddingV" : 5,
+			"paddingH" : 5, 
+			"prompt" : "Do you go in?",
+			"promptSpace" : 55,
+			"font" : "vs_f5"
+		}									
 	]
 }

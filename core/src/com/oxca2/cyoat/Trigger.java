@@ -1,6 +1,8 @@
 package com.oxca2.cyoat;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -74,8 +76,94 @@ abstract class DrawingCommand {
 		this.width = width;
 		this.height = height;
 	}
+	
+	abstract void dispose();
 }
 
+abstract class AudioCommand {
+	String id;
+	float volume;
+	boolean looping;
+	
+	abstract void play();
+	abstract void stop();
+	abstract void setVolume(float volume);
+	abstract void setLooping(boolean looping);
+	abstract void dispose();
+	
+}
+
+class SoundCommand extends AudioCommand {
+	Sound sound;
+	long soundID;
+	
+	public SoundCommand(String path, float volume, boolean looping){
+		sound = Gdx.audio.newSound(Gdx.files.internal(path));
+		this.volume = volume;
+		this.looping = looping;
+		
+	}
+	
+	public void play() {
+		if (!looping){
+			soundID = sound.play(volume);
+		} else {
+			soundID = sound.loop(volume);
+		}
+	}
+	
+	public void setVolume(float volume){
+		sound.setVolume(soundID, volume);
+	}
+	
+	public void stop() {
+		sound.stop();
+	}
+	
+	public void dispose() {
+		sound.dispose();
+	}
+
+	@Override
+	public void setLooping(boolean looping) {
+		this.looping = looping;
+	}
+}
+
+class MusicCommand extends AudioCommand{
+	Music music;
+	
+	public void MusicCommand(String path, float volume, boolean looping){
+		music = Gdx.audio.newMusic(Gdx.files.internal(path));
+		this.volume = volume;
+		this.looping = looping;
+	}
+
+	@Override
+	void play() {
+		music.play();
+	}
+
+	@Override
+	void stop() {
+		music.stop();
+	}
+
+	@Override
+	void setVolume(float volume) {
+		music.setVolume(volume);
+	}
+
+	@Override
+	void setLooping(boolean looping) {
+		music.setLooping(looping);
+	}
+
+	@Override
+	void dispose() {
+		music.dispose();
+	}
+}
 
 abstract class MultiTriggerSequence extends Trigger{
 	Array<Trigger> triggers = new Array<Trigger>();	
@@ -182,6 +270,11 @@ class DrawBackground extends DrawingCommand {
 	public void draw(SpriteBatch batch) {
 		batch.draw(sprite, 0, 0, Main.WIDTH, Main.HEIGHT);
 	}
+
+	@Override
+	void dispose() {
+		texture.dispose();
+	}
 }
 
 class AddTextbox extends Trigger {
@@ -242,6 +335,11 @@ class DrawTextbox extends DrawingCommand {
 	@Override
 	void draw(SpriteBatch batch) {
 		batch.draw(sprite, x, y, width, height);
+	}
+
+	@Override
+	void dispose() {
+		texture.dispose();
 	}
 }
 
@@ -304,6 +402,9 @@ class DrawAnimatedText extends DrawingCommand {
 	public void clearObservers(){
 		animText.deleteObservers();
 	}
+
+	@Override
+	void dispose() {}
 }
 
 class AddStaticText extends Trigger {
@@ -355,6 +456,11 @@ class DrawStaticText extends DrawingCommand {
 	void draw(SpriteBatch batch) {
 		// TODO Auto-generated method stub
 		bFont.draw(batch, text, x, y);
+	}
+
+
+	@Override
+	void dispose() {		
 	}
 	
 }
@@ -432,6 +538,9 @@ class DrawGameChoiceMenu extends DrawingCommand {
 	void draw(SpriteBatch batch) {
 		menu.draw(batch);		
 	}
+
+	@Override
+	void dispose() {}
 	
 }
 

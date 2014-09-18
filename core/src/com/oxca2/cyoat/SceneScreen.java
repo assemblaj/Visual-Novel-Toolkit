@@ -30,6 +30,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	Sound sfx;
 	
 	Array<ObjectMap<String, DrawingCommand>> layers;
+	ObjectMap<String, AudioCommand> audio;
 	ObjectMap<String, Trigger> triggerMap;
 	Array<Trigger> triggerList;
 	Trigger sceneStarter;
@@ -101,13 +102,18 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		
+		update();
 		game.batch.begin();
 		draw(game.batch);
 		game.batch.end();
-		bgmUpdate();
+		
 		setChanged();
 		notifyObservers();
+	}
+	
+	public void update() {
+		
 	}
 	
 	public void draw(SpriteBatch batch) {
@@ -332,13 +338,30 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		
 	}
 	
-	public void diposeTextures() {
-
+	public void disposeAudio() {
+		Iterator<ObjectMap.Entry<String, AudioCommand>> audioIter = audio.iterator();
+		while (audioIter.hasNext()) {
+			audioIter.next().value.dispose();
+		}
+	}
+	
+	public void disposeGraphics() {
+		Iterator<ObjectMap<String, DrawingCommand>> layerIter = layers.iterator();
+		Iterator<ObjectMap.Entry<String, DrawingCommand>> commandIter;
+		
+		while(layerIter.hasNext()){
+			commandIter = layerIter.next().iterator();
+			
+			while (commandIter.hasNext()){
+				commandIter.next().value.dispose();
+			} 
+		}			
 	}
 	
 	@Override
 	public void dispose() {
-		diposeTextures();
+		disposeAudio();
+		disposeGraphics();		
 	}
 	
 }

@@ -134,7 +134,7 @@ class SoundCommand extends AudioCommand {
 class MusicCommand extends AudioCommand{
 	Music music;
 	
-	public void MusicCommand(String path, String id,  float volume, boolean looping){
+	public MusicCommand(String path, String id,  float volume, boolean looping){
 		music = Gdx.audio.newMusic(Gdx.files.internal(path));
 		this.id = id;
 		this.volume = volume;
@@ -184,6 +184,26 @@ class PlaySound extends Trigger {
 	void execute() {
 		scene.getAudio(dataID).play();
 	}
+}
+
+class AddMusic extends Trigger {
+	String path; 
+	float volume;
+	boolean looping;
+		
+	@Override
+	void execute() {
+		scene.addAudio(new MusicCommand(path, dataID, volume, looping));
+	}
+		
+}
+
+class PlayMusic extends Trigger {
+
+	@Override
+	void execute() {
+		scene.getAudio(dataID).play();
+	}	
 }
 
 abstract class MultiTriggerSequence extends Trigger{

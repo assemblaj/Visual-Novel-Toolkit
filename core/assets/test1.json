@@ -249,17 +249,17 @@
 			"font" : "vs_f5"
 		},
 		{
-			"class" : "com.oxca2.cyoat.AddSound",
-			"dataID" : "s0",
+			"class" : "com.oxca2.cyoat.AddMusic",
+			"dataID" : "m0",
 			"triggerID" : "t17",
 			"time" : 15,		
-			"path" : "scream.mp3",
+			"path" : "song0.mp3",
 			"volume" : .5f,
 			"looping" : false
 		},		
 		{
 			"class" : "com.oxca2.cyoat.PlaySound",
-			"dataID" : "s0",
+			"dataID" : "m0",
 			"triggerID" : "t18"
 		}								
 	]

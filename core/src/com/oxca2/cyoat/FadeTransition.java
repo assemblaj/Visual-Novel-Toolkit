@@ -86,7 +86,7 @@ public class FadeTransition implements Screen{
 		System.out.println("In fadeOut");
 		if (TimeUtils.millis() - fadeMillis < fadeOutTime){ // changed fadeInTime to fadeOutTime (Tue Aug5)
 			//interpCoef = (float)(TimeUtils.nanoTime() - fadeNanos) / (float)FADE_DUR_NANOS;
-			interpCoef = (TimeUtils.millis() - fadeMillis) / fadeOutTime;;
+			interpCoef = (TimeUtils.millis() - fadeMillis) / fadeOutTime;
 			System.out.println(TimeUtils.nanoTime() - fadeNanos);
 			System.out.println(interpCoef);
 			System.out.println(preScreen.getColor().cpy().lerp(Color.BLACK, interpCoef));

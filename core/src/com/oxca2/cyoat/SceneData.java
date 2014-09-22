@@ -3,7 +3,9 @@ package com.oxca2.cyoat;
 import com.badlogic.gdx.utils.Array;
 
 public class SceneData {
-
+	
+	String name;
+	
 	String[] startArray;
 	
 	// Background Stuff

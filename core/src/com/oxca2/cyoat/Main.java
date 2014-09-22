@@ -28,7 +28,7 @@ public class Main extends Game {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, Main.WIDTH, Main.HEIGHT);
 		//this.setScreen(new SceneScreen(this, "test1"));
-		this.setScreen(new MainMenu(this));
+		this.setScreen(new SceneScreen(this, "MainMenu"));
 	}
 	
 	public void initFonts() {

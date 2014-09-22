@@ -22,6 +22,10 @@ import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.oxca2.cyoat.GameChoiceMenu.GameChoice;
 
+/*
+ * TODO -	BUGGGG, WHEN CLICKING ON MENU TWICE I GET "SAME TASK CAN NOT BE SCHEDULED TWICE 
+ * ERROR. FIX THAT. 
+ */
 public class SceneScreen extends Observable implements Screen, Transitionable{
 	final Main game;
 	final SceneData data;
@@ -31,6 +35,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	
 	Array<ObjectMap<String, DrawingCommand>> layers;
 	ObjectMap<String, AudioCommand> audio;
+	ObjectMap<String, UpdateCommand> updates;
 	ObjectMap<String, Trigger> triggerMap;
 	Array<Trigger> triggerList;
 	Trigger sceneStarter;
@@ -63,6 +68,9 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		
 		// Create the Map for audio objects. 
 		audio = new ObjectMap<String, AudioCommand>();
+		
+		// Creating the map for the Update command objects. 
+		updates = new ObjectMap<String, UpdateCommand>();
 		
 		startScene();
 	}
@@ -107,7 +115,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		update();
+		update(delta);
 		game.batch.begin();
 		draw(game.batch);
 		game.batch.end();
@@ -116,8 +124,11 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		notifyObservers();
 	}
 	
-	public void update() {
-		
+	public void update(float delta) {
+		Iterator<ObjectMap.Entry<String, UpdateCommand>> updateIter = updates.iterator();
+		while (updateIter.hasNext()){
+			updateIter.next().value.update(delta);
+		}
 	}
 	
 	public void draw(SpriteBatch batch) {
@@ -156,6 +167,12 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		audio.put(command.id, command);
 	}
 	
+	public void removeAudio(AudioCommand command){
+		command.stop();
+		command.dispose();
+		audio.remove(command.id);
+	}
+	
 	public AudioCommand getAudio(String id){
 		return audio.get(id);
 	}
@@ -184,7 +201,7 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 	public void removeBackground(Trigger object) {
 		//newLayers.get(object.layer).get(object.id).texture.dispose();
 		//removeCommandFromLayer(object.layer, object.id);
-		removeTriggerWidthTexture(object);
+		removeTriggerWithTexture(object);
 	}
 	
 	public void setTextbox(
@@ -195,9 +212,14 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		command.setBounds(x, y, width, height);
 	}
 	
-	public void removeTriggerWidthTexture(Trigger object) {
+	public void removeTriggerWithTexture(Trigger object) {
 		layers.get(object.layer).get(object.dataID).texture.dispose();
 		removeCommandFromLayer(object.layer, object.dataID);
+	}
+	
+	public void removeCommandWithTexture(int layer, String dataID) {
+		layers.get(layer).get(dataID).texture.dispose();
+		removeCommandFromLayer(layer, dataID);
 	}
 	
 	public DrawingCommand resetTriggerTexture(int layer, String id, Texture newTexture) {
@@ -207,8 +229,12 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		return command;
 	}
 	
+	public DrawingCommand getDrawingCommand(int layer, String id){
+		return layers.get(layer).get(id);
+	}
+	
 	public void removeTextbox(Trigger object) {
-		removeTriggerWidthTexture(object);
+		removeTriggerWithTexture(object);
 	}
 	
 	public void removeAnimatedText(Trigger object) {
@@ -227,33 +253,16 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 				new SceneScreen(game, data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2]) );
 		game.setScreen(transition);
 	}
+		
 	
-	public void bgmUpdate() {
-		if (fadeMusic){
-			fadeDown();
-		}
+	public void addUpdate(UpdateCommand updateCommand){
+		updates.put(updateCommand.id, updateCommand);
 	}
 	
-	public void fadeDown() {
-		if (bgMusic.getVolume() - .01f >= 0f){
-			bgMusic.setVolume(bgMusic.getVolume() - .01f);
-			System.out.println("!@$%%%^^^^ ^&***I'm in fadeDown in SceneScreen");
-		}else {
-			bgMusic.stop();
-			fadeMusic = false;
-		}
-		System.out.println("MUSIC VOLUME: " + bgMusic.getVolume());
+	public void removeUpdate(UpdateCommand updateCommand){
+		updates.remove(updateCommand.id);
 	}
-	
-	boolean fadeMusic;
-	long fadeMusicMillis;
-	long fadeOutMusicTime;
-	public void fadeMusic(String time) {
-		fadeMusic = true;
-		fadeMusicMillis = TimeUtils.millis();
-		fadeOutMusicTime = Long.parseLong(time) * 1000l;
-	}
-	
+		
 	boolean fadeOutBG, fadeInBG;
 	long fadeBGMillis, fadeOutBGTime, fadeInBGTime;
 	float interpCoef = 0f;
@@ -305,9 +314,6 @@ public class SceneScreen extends Observable implements Screen, Transitionable{
 		removeCommandFromLayer(object.layer, object.dataID);
 	}
 	
-	public void removeAnimatedTextOnCompletion(String trigger) {
-		//animatedTextMap.get(args[1]).addObserver(new CompletionObserver(this, trigger));
-	}
 	
 	// 11 is which menu
 	public void testMenu(String i) {

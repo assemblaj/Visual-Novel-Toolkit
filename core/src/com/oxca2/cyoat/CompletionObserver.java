@@ -22,7 +22,7 @@ public abstract class CompletionObserver implements Observer{
 	Array<Trigger> triggers;
 	Timer.Task trigger;
 	float delay = 1.5f;
-	
+	final Timer t = new Timer();
 	public CompletionObserver(SceneScreen scene, Array<Trigger> triggers, float delay) {
 		this.scene = scene;
 		this.triggers = triggers;
@@ -67,7 +67,8 @@ class AnimatedTextAfterClickObserver extends CompletionObserver {
 }
 
 class AnimatedTextImmediateObserver extends CompletionObserver {
-
+	int count = 0;
+	boolean done = false;
 	public AnimatedTextImmediateObserver(SceneScreen scene,
 			Array<Trigger> triggers, float delay) 
 	{
@@ -77,8 +78,13 @@ class AnimatedTextImmediateObserver extends CompletionObserver {
 	@Override
 	public void update(Observable animText, Object arg){
 		AnimatedText object = (AnimatedText) animText;
-		if (object.finished()){
+		// it's being told to do the same thing multiple
+		// times, because it sees the thing multiple times. 
+		//done stops it form running the same task twice 
+		if (object.finished() && !done){
 			Timer.schedule(trigger, delay);
+			System.out.println("count: " + (++count));
+			done = true;
 		}
 	}
 	

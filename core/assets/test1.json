@@ -5,7 +5,7 @@
 	{
 		"class" : "com.oxca2.cyoat.RunMultipleTriggers",
 		"triggerIDs" : [
-			"t12", "t17", "t18", "compl_2"]	
+			"t1", "t12", "t17", "t18", "compl_2"]	
 	},
 	
 	"triggerList" : [
@@ -213,7 +213,7 @@
 			"layer" : 2,
 			"delay" : .8f,
 			"triggerID" : "compl_3",
-			"triggerIDs" : ["t14", "t15", "t16"],
+			"triggerIDs" : ["t14", "t15", "t16", "t19", "t20"],
 		},
 		{	
 			"class" : "com.oxca2.cyoat.RemoveAnimatedText",
@@ -235,7 +235,7 @@
 			"dataID" : "m1",
 			"triggerID" : "t16",
 			"time" : 20, 
-			"itemIDs" : ["mi1", "mi2"],
+			"itemIDs" : ["mi1", "mi0"],
 			"itemNames" : ["Set background 1", "Set background 2", "Remove Background"],
 			"space" : 5,
 			"menuX" : 60,
@@ -258,9 +258,28 @@
 			"looping" : false
 		},		
 		{
-			"class" : "com.oxca2.cyoat.PlaySound",
+			"class" : "com.oxca2.cyoat.PlayMusic",
 			"dataID" : "m0",
 			"triggerID" : "t18"
+		},
+		{
+			"class" : "com.oxca2.cyoat.StartMusicFadeOut",
+			"dataID" : "m0",
+			"triggerID" : "t19",
+			"step" : .002f
+		},
+		{
+			"class" : "com.oxca2.cyoat.StartFadeOutBackground",
+			"dataID" : "bg0",
+			"layer" : 0, 
+			"fadeTime" : 1f,
+			"triggerID" : "t20"
+		},
+		{
+			"class" : "com.oxca2.cyoat.RemoveGameChoiceMenu",
+			"dataID" : "m1",
+			"layer" : 3,
+			"triggerID" : "mi0"
 		}								
 	]
 }

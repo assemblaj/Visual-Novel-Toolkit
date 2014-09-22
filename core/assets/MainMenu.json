@@ -1,0 +1,71 @@
+{
+	"name" : "Main Menu", 
+	
+	"startLayers" : 2,
+
+	"sceneStarter" : 
+	{
+		"class" : "com.oxca2.cyoat.RunMultipleTriggers",
+		"triggerIDs" : [
+			"t1", "t2", "t3", "t4"
+		]	
+	},
+	
+	"triggerList" : [
+		{
+			"class" : "com.oxca2.cyoat.AddNewBackground",
+			"layer": 0,
+			"dataID" : "bg0",
+			"triggerID" : "t1",
+			"bgPath" : "pic3.jpg",
+			"time" : 0
+		},
+		{
+			"class" : "com.oxca2.cyoat.AddMusic",
+			"dataID" : "m0",
+			"triggerID" : "t2",
+			"time" : 15,		
+			"path" : "song0.mp3",
+			"volume" : .5f,
+			"looping" : false
+		},	
+		{		
+			"class" : "com.oxca2.cyoat.PlayMusic",
+			"dataID" : "m0",
+			"triggerID" : "t3"
+		},			
+		{
+			"class" : "com.oxca2.cyoat.AddMenu",
+			"layer" : 1,
+			"dataID" : "m0",
+			"triggerID" : "t4",
+			"time" : 20, 
+			"itemIDs" : ["mi1", "mi2"],
+			"itemNames" : ["Start Game", "Exit"],
+			"space" : 5,
+			"menuX" : 60,
+			"menuY" : 95,
+			"itemHeight" : 20,
+			"itemWidth" : 200,
+			"paddingV" : 25,
+			"paddingH" : 25, 
+			"font" : "vs_f5"
+		},
+		{
+			"class" : "com.oxca2.cyoat.SetBackground",
+			"layer": 0,
+			"dataID" : "bg0",
+			"triggerID" : "mi1",
+			"bgPath" : "ai4.jpg",
+			"time" : 2
+		},		
+		{
+			"class" : "com.oxca2.cyoat.SetBackground",
+			"layer": 0,
+			"dataID" : "bg0",
+			"triggerID" : "mi2",
+			"bgPath" : "ai3.png",
+			"time" : 5
+		}							
+	]	
+}

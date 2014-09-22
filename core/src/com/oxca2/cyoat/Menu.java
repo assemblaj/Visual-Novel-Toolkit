@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.oxca2.cyoat.Menu.MenuItem;
 
 public class Menu extends InputAdapter {
 	final Main game;
@@ -107,7 +108,9 @@ public class Menu extends InputAdapter {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {			
 		Iterator<MenuItem> items = menuItems.iterator();
 		MenuItem testItem;
-				
+		
+		// need to stop double clicking issue 
+		
 		while(items.hasNext()){
 			testItem = items.next();
 			
@@ -162,6 +165,9 @@ public class Menu extends InputAdapter {
 	
 	public abstract class MenuItem {
 		String name;
+		Trigger trigger; 
+		SceneScreen scene;
+
 		Rectangle bounds = new Rectangle();
 		
 		abstract void runCommand();
@@ -182,12 +188,31 @@ public class Menu extends InputAdapter {
 			this.name = name;
 			return this;
 		}
+		
 	}
 	
 	public abstract class MenuItemRenderer {	
 		abstract void drawHighlighted(Menu menu, MenuItem item, SpriteBatch batch);
 		abstract void drawDefault(Menu menu, MenuItem item, SpriteBatch batch);
 	}
+	
+	class DefaultMenuItem extends MenuItem{
+		SceneScreen scene;
+		Trigger trigger;
+		
+		public DefaultMenuItem(String name, Trigger trigger, SceneScreen scene){
+			this.name = name;
+			this.trigger = trigger;
+			this.scene = scene;
+		}
+		
+		@Override
+		void runCommand() {
+			trigger.execute();
+		}
+		
+	}
+
 }
 
 

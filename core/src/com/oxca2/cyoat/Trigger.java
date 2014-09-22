@@ -3,6 +3,7 @@ package com.oxca2.cyoat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -65,16 +66,21 @@ abstract class UpdateCommand {
 class FadeOutMusic extends UpdateCommand {
 	MusicCommand music;
 	SceneScreen scene;
-	public FadeOutMusic(String id, SceneScreen scene) {
+	float step;
+
+	public FadeOutMusic(String id, SceneScreen scene, float step) {
 		this.id = id;
 		this.music = (MusicCommand) scene.getAudio(id);
+		this.scene = scene;
+		this.step = step;
 	}
 	
 	@Override
 	void update(float delta) {
 		float volume = music.getVolume();
-		if (volume - .01f >= 0f){
-			music.setVolume(volume - .01f);
+		
+		if (volume - step >= 0f){
+			music.setVolume((float)(volume - step));
 		}else {
 			end();
 		}
@@ -88,13 +94,67 @@ class FadeOutMusic extends UpdateCommand {
 }
 
 class StartMusicFadeOut extends Trigger {
-
+	float step; 
+	
 	@Override
 	void execute() {
-		scene.addUpdate(new FadeOutMusic(dataID, scene));
+		scene.addUpdate(new FadeOutMusic(dataID, scene, step));
+	}
+}
+
+// need to add triggers for adding and removing regular images
+
+class FadeOutBackground extends UpdateCommand {
+	
+	SceneScreen scene;
+	long fadeMillis;
+	float fadeOutTime;
+	final int MILLIS_IN_SECONS = 1000;
+	float interpCoef = 0f; //interpolation coefficient  
+	int layer;
+	DrawingCommand drawBG;
+	
+	public FadeOutBackground(String id, int layer, SceneScreen scene, float time){
+		this.id = id;
+		this.scene = scene;
+		this.layer = layer;
+		fadeMillis = TimeUtils.millis();
+		fadeOutTime = time * MILLIS_IN_SECONS;
+		System.out.println(fadeOutTime);
+		drawBG = scene.getDrawingCommand(layer, id);
+	}
+	
+	@Override
+	void update(float delta) {
+		System.out.println(TimeUtils.millis() - fadeMillis);
+		if (TimeUtils.millis() - fadeMillis< fadeOutTime){
+			interpCoef = (TimeUtils.millis() - fadeMillis) / fadeOutTime;
+			System.out.println("before color: " + drawBG.sprite.getColor());
+			drawBG.sprite.setColor(Color.WHITE.cpy().lerp(Color.BLACK, interpCoef));
+			System.out.println("after color: " + drawBG.sprite.getColor());
+		} else {
+			end();
+		}
+	}
+
+	@Override
+	void end() {
+		scene.removeCommandWithTexture(layer, id);
+		scene.removeUpdate(this);
 	}
 	
 }
+
+class StartFadeOutBackground extends Trigger{
+	float fadeTime;
+	
+	@Override
+	void execute() {
+		scene.addUpdate(new FadeOutBackground(dataID, layer, scene, fadeTime));
+	}
+	
+}
+
 /* The IDs for the Commands are the dataIDs
  * for the triggers
  */
@@ -358,10 +418,12 @@ class DrawBackground extends DrawingCommand {
 		this.id = id;
 		texture = new Texture(Gdx.files.internal(bgPath));
 		sprite  = new Sprite(texture);
+		sprite.setSize(Main.WIDTH, Main.HEIGHT);
 	}
 	
 	public void draw(SpriteBatch batch) {
-		batch.draw(sprite, 0, 0, Main.WIDTH, Main.HEIGHT);
+		//batch.draw(sprite, 0, 0, Main.WIDTH, Main.HEIGHT);
+		sprite.draw(batch);
 	}
 
 	@Override
@@ -585,8 +647,7 @@ class RemoveGameChoiceMenu extends Trigger {
 
 	@Override
 	void execute() {
-		
-		
+		scene.removeCommandFromLayer(layer, dataID);
 	}
 	
 }
@@ -637,5 +698,83 @@ class DrawGameChoiceMenu extends DrawingCommand {
 	
 }
 
+class AddMenu extends Trigger {
+	int space,  menuX,  menuY;
+	int itemHeight, itemWidth, paddingV,  paddingH;
+	float offset;
+	String font; 
+	String[] itemIDs;
+	String[] itemNames;
+	
+	@Override
+	void execute() {
+		offset = game.fonts.get(font).getLineHeight();
+		scene.addCommandToLayer(
+				new DrawMenu(layer, dataID, game, space, menuX, menuY,
+				    itemHeight, itemWidth,  paddingV, paddingH,
+				    offset, font, itemIDs, itemNames, scene));	
+	}
+		
+}
 
+class DrawMenu extends DrawingCommand {
+	Menu menu;
+	Array<Trigger> menuItems;
+	ObjectMap<String, Trigger> map;
+	
+	public DrawMenu(int layer, String id, Main main,
+			int space, int menuX, int menuY,
+			int itemHeight, int itemWidth, 
+			int paddingV, int paddingH,
+			float offset,  String font, String[] itemIDs, 
+			String[] itemNames, SceneScreen scene)
+	{
+		this.layer = layer;
+		this.id = id;
+		menuItems = new Array<Trigger>();
+		map = scene.getTriggers();
+		
+		menu = new Menu(main, space,
+			menuX, menuY,itemHeight, itemWidth,
+			paddingV, paddingH, offset);
+		
+		initMenuItems(itemIDs);
+		addItemsToMenu(itemNames, scene);
+		
+		menu.layoutMenu();
+		Gdx.input.setInputProcessor(menu);
+	}
+	
+	
+	
+	void initMenuItems(String[] itemIDs){
+		for (int i = 0; i < itemIDs.length; i++){
+			menuItems.add(map.get(itemIDs[i]));
+		}	
+	}
+	
+	void addItemsToMenu(String[] itemNames, SceneScreen scene) {
+		int count = 0;
+		for (Trigger item: menuItems){
+			menu.add(menu.new DefaultMenuItem(itemNames[count], item, scene));
+			count++;
+		}
+	}
+	
+	@Override
+	void draw(SpriteBatch batch){
+		menu.draw(batch);	
+	}
 
+	@Override
+	void dispose() {}
+}
+
+class RemoveCommandFromLayer extends Trigger {
+
+	@Override
+	void execute() {
+		scene.removeCommandFromLayer(layer, dataID);		
+	}
+	
+}

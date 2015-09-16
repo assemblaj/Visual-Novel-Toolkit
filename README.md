@@ -1,6 +1,6 @@
-CYOA-Toolkit
+Visual Novel -Toolkit
 ============
-Library for making Choose Your Own Adventure Book style games in libgdx. Unfinished. Purpose of
+Library for making Visual Novel style games in libgdx. Unfinished. Purpose of
 this is for me to learn libgdx and work on a large project. 
 
 Originally, triggers were written in string arrays in jSon files. Since that was a bad 
